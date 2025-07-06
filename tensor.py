@@ -1,13 +1,15 @@
 import numpy as np
-
-from functions import Add
+from functions import Add, Mul
 
 class Tensor:
-    def __init__ (self, data, requires_grad=False):
+    def __init__ (self, data, requires_grad=False, _children=(), _op='', label=''):
         self.data =  data
         self.requires_grad = requires_grad
         self.grad = 0
         self.grad_fn = None
+        self._prev = set(_children)
+        self._op = _op
+        self.label = label
 
     def __repr__(self):
         return f"tensor(data={self.data}, requires_grad={self.requires_grad})"
@@ -51,3 +53,12 @@ class Tensor:
             other = Tensor(other)
 
         return Add.apply(self, other)
+
+    def __mul__(self, other):
+        if not isinstance(other, Tensor):
+            other = Tensor(other)
+
+        return Mul.apply(self, other)
+
+    def __rmul__(self, other):
+        return self * other
