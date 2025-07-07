@@ -1,5 +1,7 @@
 import numpy as np
-from functions import Add, Mul
+from regex import W
+from functions import Add, Mul, Pow
+
 
 class Tensor:
     def __init__ (self, data, requires_grad=False, _children=(), _op='', label=''):
@@ -51,8 +53,17 @@ class Tensor:
     def __add__(self, other):
         if not isinstance(other, Tensor):
             other = Tensor(other)
-
+            
         return Add.apply(self, other)
+
+    def __neg__(self):
+        return self * -1
+
+    def __sub__(self, other):
+        if not isinstance(other, Tensor):
+            other = Tensor(other)
+
+        return Add.apply(self, -other)
 
     def __mul__(self, other):
         if not isinstance(other, Tensor):
@@ -62,3 +73,13 @@ class Tensor:
 
     def __rmul__(self, other):
         return self * other
+
+
+    def __truediv__(self, other):
+        return self * other ** -1
+    
+    def __pow__(self, other):
+        if not isinstance(other, (int, float)):
+            raise ValueError(f'Tensor power can only be int or float')
+
+        return Pow.apply(self, other)

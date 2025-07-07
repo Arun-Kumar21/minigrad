@@ -47,4 +47,21 @@ class MulCtx:
             self.a.backward(grad_output * self.b.data)
         if self.b.requires_grad:
             self.b.backward(grad_output * self.a.data)
-        
+
+class Pow(Function):
+    @staticmethod
+    def apply(a, b):
+        output = Tensor(a.data ** b, _children=(a,), _op="**")
+        output.requires_grad = a.requires_grad
+
+        output.grad_fn = PowCtx(a, b)
+        return output
+
+class PowCtx:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def backward(self, grad_output):
+        if self.a.requires_grad:
+            self.a.backward((self.b * self.a.data ** (self.b - 1)) * grad_output)

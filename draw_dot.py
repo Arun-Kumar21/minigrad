@@ -9,7 +9,6 @@ def draw_dot(root):
         if v not in nodes:
             nodes.add(v)
 
-            label = f"{v.label} | data: {v.data:.4f}"
             dot.node(str(id(v)), label = "{ %s | data %.4f | grad %.4f }" % (v.label, v.data, v.grad), shape='record')
 
             for child in v._prev:
